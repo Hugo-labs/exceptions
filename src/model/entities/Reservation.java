@@ -50,9 +50,17 @@ public class Reservation {
         return diff;
     }
 
-    public void updateDates(LocalDate checkin, LocalDate checkout) {
+    public String updateDates(LocalDate checkin, LocalDate checkout) {
+        LocalDate now = LocalDate.now();
+        if (checkin.isBefore(now) || checkout.isBefore(now)) {
+            return "Error in reservation: Check-out date must be future dates";
+        }
+        if (!checkout.isBefore(checkin)) {
+            return "Error in reservation: Check-out date must be after check-in date";
+        }
         this.checkin = checkin;
         this.checkout = checkout;
+        return null; // como o método precisa retornar uma str, caso não haja nenhum erro nas verificações, o programa retornar null
     }
 
     @Override

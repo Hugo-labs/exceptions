@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
+import model.excpetions.DomainException;
+
 public class Reservation {
 
     private static final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -15,7 +17,10 @@ public class Reservation {
     public Reservation() {
     }
 
-    public Reservation(Integer roomNumber, LocalDate checkin, LocalDate checkout) {
+    public Reservation(Integer roomNumber, LocalDate checkin, LocalDate checkout) throws DomainException {
+        if (checkout.isBefore(checkin)) {
+            throw new DomainException("Error in reservation: Check-out date must be after check-in date");
+        }
         this.roomNumber = roomNumber;
         this.checkin = checkin;
         this.checkout = checkout;
@@ -50,17 +55,16 @@ public class Reservation {
         return diff;
     }
 
-    public String updateDates(LocalDate checkin, LocalDate checkout) {
+    public void updateDates(LocalDate checkin, LocalDate checkout) throws DomainException {
         LocalDate now = LocalDate.now();
         if (checkin.isBefore(now) || checkout.isBefore(now)) {
-            return "Error in reservation: Check-out date must be future dates";
+            throw new DomainException("Error in reservation: Check-out date must be future dates");
         }
-        if (!checkout.isBefore(checkin)) {
-            return "Error in reservation: Check-out date must be after check-in date";
+        if (checkout.isBefore(checkin)) {
+            throw new DomainException("Error in reservation: Check-out date must be after check-in date");
         }
         this.checkin = checkin;
         this.checkout = checkout;
-        return null; // como o método precisa retornar uma str, caso não haja nenhum erro nas verificações, o programa retornar null
     }
 
     @Override
